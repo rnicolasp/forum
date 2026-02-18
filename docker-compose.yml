@@ -35,8 +35,7 @@ services:
     container_name: forum-front-local
     working_dir: /app
     volumes:
-      - ./vue-forum-app:/app 
-      - /app/node_modules
+      - ./forum-front-local:/app 
     ports:
       - "8083:8080"
     environment:

@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # BASE DE DADES (Port 3307)
+  db-mysql:
+    image: mysql:8.0
+    container_name: forum-db-local
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=forum_db
+    volumes:
+      - mysql_forum_data:/var/lib/mysql
+    networks:
+      - forum-dev-net
+
+  # PHPMYADMIN (Port 8082)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: forum-pma-local
+    ports:
+      - "8082:80"
+    environment:
+      - PMA_HOST=db-mysql
+      - MYSQL_ROOT_PASSWORD=root
+    depends_on:
+      - db-mysql
+    networks:
+      - forum-dev-net
+
+  # FRONTEND VUE (Port 8083)
+  vue-frontend:
+    image: node:14-alpine
+    container_name: forum-front-local
+    working_dir: /app
+    volumes:
+      - ./vue-forum-app:/app 
+      - /app/node_modules
+    ports:
+      - "8083:8080"
+    environment:
+      - NODE_ENV=development
+      - VUE_APP_API_CLIENT=server  # Important: Perquè busqui l'API real
+      # El navegador del usuario no puede resolver "backend", debe usar localhost
+      - VUE_APP_API_SERVER_BASE_URL=http://localhost:8080
+    command: sh -c "npm install && npm run serve"
+    networks:
+      - forum-dev-net
+
+networks:
+  forum-dev-net:
+    driver: bridge
+
+volumes:
+  mysql_forum_data:

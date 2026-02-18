@@ -1,0 +1,23 @@
+# IDE Files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Java / Maven (Backend)
+target/
+*.class
+*.jar
+*.war
+*.ear
+mvnw
+mvnw.cmd
+
+# Node / Frontend (Vue)
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env.local
+.env.*.local

@@ -40,9 +40,8 @@ services:
       - "8083:8080"
     environment:
       - NODE_ENV=development
-      - VUE_APP_API_CLIENT=server  # Important: Perquè busqui l'API real
-      # El navegador del usuario no puede resolver "backend", debe usar localhost
-      - VUE_APP_API_SERVER_BASE_URL=http://localhost:8080
+      - VUE_APP_API_CLIENT=server
+      - VUE_APP_API_SERVER_BASE_URL=http://localhost:8081/api
     command: sh -c "npm install && npm run serve"
     networks:
       - forum-dev-net

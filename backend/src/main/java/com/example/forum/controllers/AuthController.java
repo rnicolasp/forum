@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -26,35 +27,35 @@ public class AuthController {
     private JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email already exists");
+    public ResponseEntity<?> register(@RequestBody User user) {
+        
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.status(400).body(Map.of("message", "Este email ya está en uso. Por favor, elige otro."));
         }
 
-        User user = new User(
-                request.getName(),
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword())
-        );
-        user = userRepository.save(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        String jwtToken = jwtService.generateToken(user);
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("user");
+        }
 
-        return ResponseEntity.ok(new AuthResponse(new UserDto(user), jwtToken));
+        User savedUser = userRepository.save(user);
+        String jwtToken = jwtService.generateToken(savedUser);
+        
+        return ResponseEntity.ok(new AuthResponse(new UserDto(savedUser), jwtToken));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User request) {
-        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        Optional<User> userOpt = userRepository.findByEmail(loginRequest.getEmail());
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                String jwtToken = jwtService.generateToken(user);
-                return ResponseEntity.ok(new AuthResponse(new UserDto(user), jwtToken));
-            }
+        if (userOpt.isEmpty() || !passwordEncoder.matches(loginRequest.getPassword(), userOpt.get().getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("message", "El email o la contraseña son incorrectos."));
         }
 
-        return ResponseEntity.status(401).body("Invalid credentials");
+        User user = userOpt.get();
+        String jwtToken = jwtService.generateToken(user);
+        
+        return ResponseEntity.ok(new AuthResponse(new UserDto(user), jwtToken));
     }
 }

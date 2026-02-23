@@ -40,11 +40,7 @@ public class CategoryController {
     }
     @PutMapping("/{slug}")
     public ResponseEntity<?> updateCategory(@PathVariable String slug, @RequestBody Category categoryDetails) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
-        if (currentUser == null || !"admin".equalsIgnoreCase(currentUser.getRole())) {
-            return ResponseEntity.status(403).body("Solo los administradores pueden editar categorías");
-        }
+        
         Optional<Category> categoryOpt = categoryRepository.findBySlug(slug);
         if (categoryOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -56,12 +52,7 @@ public class CategoryController {
         return ResponseEntity.ok(updatedCategory);
     }
     @DeleteMapping("/{slug}")
-    public ResponseEntity<?> deleteCategory(@PathVariable String slug) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
-        if (currentUser == null || !"admin".equalsIgnoreCase(currentUser.getRole())) {
-            return ResponseEntity.status(403).body("Solo los administradores pueden eliminar categorías");
-        }
+    public ResponseEntity<?> deleteCategory(@PathVariable String slug) {        
         Optional<Category> categoryOpt = categoryRepository.findBySlug(slug);
         if (categoryOpt.isEmpty()) {
             return ResponseEntity.notFound().build();

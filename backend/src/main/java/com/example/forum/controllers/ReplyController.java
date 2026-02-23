@@ -30,55 +30,42 @@ public class ReplyController {
         Reply savedReply = replyRepository.save(replyRequest);
         return ResponseEntity.ok(savedReply);
     }
-
     @PutMapping("/{replyId}")
     public ResponseEntity<?> updateReply(@PathVariable Integer topicId, @PathVariable Integer replyId, @RequestBody Reply replyDetails) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
-
         Optional<Reply> replyOpt = replyRepository.findById(replyId);
         if (replyOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
         Reply reply = replyOpt.get();
-
         if (!reply.getTopic().getId().equals(topicId)) {
             return ResponseEntity.badRequest().body("La respuesta no pertenece a este hilo");
         }
-
         if (!reply.getUser().getUser_id().equals(currentUser.getUser_id()) 
                 && !"admin".equalsIgnoreCase(currentUser.getRole())) {
             return ResponseEntity.status(403).body("No tienes permiso para editar esta respuesta");
         }
-
         reply.setContent(replyDetails.getContent());
         Reply updatedReply = replyRepository.save(reply);
-        
         return ResponseEntity.ok(updatedReply);
     }
-
     @DeleteMapping("/{replyId}")
     public ResponseEntity<?> deleteReply(@PathVariable Integer topicId, @PathVariable Integer replyId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
-
         Optional<Reply> replyOpt = replyRepository.findById(replyId);
         if (replyOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
         Reply reply = replyOpt.get();
-
         if (!reply.getTopic().getId().equals(topicId)) {
             return ResponseEntity.badRequest().body("La respuesta no pertenece a este hilo");
         }
-
         if (!reply.getUser().getUser_id().equals(currentUser.getUser_id()) 
                 && !"admin".equalsIgnoreCase(currentUser.getRole())) {
             return ResponseEntity.status(403).body("No tienes permiso para eliminar esta respuesta");
         }
-
         replyRepository.delete(reply);
         return ResponseEntity.ok().build();
     }

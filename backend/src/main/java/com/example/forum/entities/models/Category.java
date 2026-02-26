@@ -1,5 +1,8 @@
 package com.example.forum.entities.models;
 import jakarta.persistence.*;
+
+import java.util.List;
+
 @Entity
 @Table(name="categories")
 public class Category {
@@ -18,6 +21,10 @@ public class Category {
         this.slug = slug;
         this.description = description;
     }
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    public List<Topic> topics;
+
     public Category(String slug) {
         this.slug = slug;
     }

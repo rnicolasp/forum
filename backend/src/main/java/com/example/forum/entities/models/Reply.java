@@ -14,12 +14,14 @@ public class Reply {
     private String content;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnoreProperties({"password", "email", "authorities"})
     private User user;
     @ManyToOne
     @JoinColumn(name = "topic_id", nullable = false)
+    @JsonIgnoreProperties("replies")
     private Topic topic;
     public Reply() {}
     public Integer getId() {

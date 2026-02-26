@@ -19,7 +19,7 @@ public class User implements UserDetails {
     private String email;
     @Column(columnDefinition = "LONGTEXT")
     private String avatarUrl = "";
-    private String role = "user";
+    private String role = "admin";
     public User() {}
     public User(String name, String email, String password) {
         this.name = name; this.email = email; this.password = password;

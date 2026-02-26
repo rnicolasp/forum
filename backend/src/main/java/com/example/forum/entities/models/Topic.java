@@ -1,4 +1,5 @@
 package com.example.forum.entities.models;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -25,10 +26,11 @@ public class Topic {
     private User user;
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnoreProperties("topics")
     private Category category;
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("topic")  
     private List<Reply> replies = new ArrayList<>();
+
     public Topic() {}
     public Integer getId() {
         return id;

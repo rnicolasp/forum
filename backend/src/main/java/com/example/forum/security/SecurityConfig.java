@@ -20,7 +20,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login", "/api/register", "/actuator/**", "/h2-console/**", "/error").permitAll()
+                .requestMatchers("/api/login", "/api/register", "/actuator/**", "/error").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/topics/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
